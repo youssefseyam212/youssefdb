@@ -1,94 +1,88 @@
-# database-engine-
-File-Based Database System in Node.js
-Overview
-This project implements a simple file-based database system in Node.js, designed for lightweight
-data management without the need for a full-fledged database server. The system allows for basic
-CRUD (Create, Read, Update, Delete) operations and indexing on JSON data stored in local files.
-Components
-1. Collection Class
-The Collection class is the core of this database system. It manages a collection of documents and
-provides methods for various database operations.
-Key Methods
-Here are the main methods provided by the Collection class:
-- constructor(name, db): Initializes a new collection with the specified name and references the
-parent database object.
-- save(): Saves the current state of the collection to a JSON file named after the collection.
-- 
-- read(): Reads the collection data from its corresponding JSON file.
-- 
-- insertOne(data): Inserts a single document into the collection, assigning it a unique _id.
-- 
-- insertMany(data): Inserts multiple documents into the collection, each with a unique _id.
-- 
-- find(query): Finds all documents matching a given query.
-- 
-- findOne(query): Finds the first document matching a given query.
-- 
-- deleteOne(query): Deletes the first document matching a given query.
-- 
-- deleteMany(query): Deletes all documents matching a given query.
-- 
-- updateOne(query, update): Updates the first document that matches a given query.
-- 
-File-Based Database System in Node.js
+# youssefdb
 
-- updateMany(query, update): Updates all documents that match a given query.
-- 
-- createIndex(query): Creates an index based on the specified query.
-- 
-- readIndex(): Reads the index data from a JSON file.
-- 
-- saveIndex(): Saves the current index to a JSON file.
-2. DB Class
-- The DB class is a container for multiple collections. It provides a method to create or retrieve
-- collections.
-- Key Methods
-- Here are the main methods provided by the DB class:
-- constructor(): Initializes the database with an empty set of collections.
-- collection(name): Retrieves or creates a new collection by name.
-- Usage
------------------------------------------------------------------
-- 1. Initializing the Database :
-       - const DB = require('./DB');
-       - const db = new DB();
--------------------------------------------------------------------  
-- 2. Creating a Collection :
-   - const users = db.collection('users');
--------------------------------------------------------------------
-- 3. Inserting Data:
-       - Insert One Document:
-       - users.insertOne({ name: 'Alice', age: 30 });
-         -----------------------------------------------
-       - Insert Multiple Documents:
-- users.insertMany([{ name: 'Bob', age: 25 }, { name: 'Charlie', age: 35 }]);
----------------------------------------------------------
-- 4. Querying Data : 
-       - Find All Matching Documents:
-       - const results = users.find({ age: 30 });
-       - Find One Document:
-       -  const result = users.findOne({ name: 'Alice' });
-   ------------------------------------------------------
-- 5. Updating Data:
-       - Update One Document:
-       - users.updateOne({ name: 'Alice' }, { $set: { age: 31 } });
-       - Update Multiple Documents:
-       - users.updateMany({ age: 30 }, { $set: { age: 31 } });
-   -------------------------------------------------------
-- 6. Deleting Data : 
-       - Delete One Document:
-       - users.deleteOne({ name: 'Alice' });
-       - Delete Multiple Documents:
-       - users.deleteMany({ age: 31 });
-   ------------------------------------------------------
-- 7. Indexing
-       - Create an Index:
-       - users.createIndex({ age: 25 });
-   ------------------------------------------------------
-- File Structure
-- DB.js: The main file containing the DB and Collection classes.
-- <collection_name>.json: Files generated for each collection, storing the actual data.
-- <collection_name>Index.json: Files storing index data for faster querying.
-- Conclusion
-- This file-based database system is ideal for small projects or situations where a simple, lightweight
-- database solution is needed. It offers flexibility and ease of use while providing essential database
-- functionalities like CRUD operations and indexing.
+A file-based NoSQL database engine for Node.js projects that need MongoDB-style collections without running a database server.
+
+## Demo
+
+TODO: screenshot
+
+npm package: https://www.npmjs.com/package/youssefdb
+
+## Architecture
+
+```mermaid
+flowchart LR
+    App[Your Node.js code] --> DB[DB class]
+    DB --> Col[Collection]
+    Col -->|bson.serialize| File["name.bson"]
+    File -->|bson.deserialize| Col
+    Col -->|createIndex| Index["nameIndex.bson"]
+```
+
+Every operation reads the whole collection file from disk, changes the array in memory, and writes the whole file back. Each collection is one BSON file in the current working directory.
+
+## Tech stack
+
+- JavaScript (Node.js, CommonJS)
+- `bson` for serialization and ObjectId generation
+- Node.js `fs` for storage
+
+## Run locally
+
+This repository contains a single source file, `DB.js`, and no `package.json`.
+
+```bash
+git clone https://github.com/youssefseyam212/youssefdb.git
+cd youssefdb
+npm install bson
+```
+
+Then, in a script next to `DB.js`:
+
+```js
+const DB = require('./DB');
+const db = new DB();
+const users = db.collection('users');
+
+users.insertOne({ name: 'Alice', age: 30 });
+users.insertMany([{ name: 'Bob', age: 25 }, { name: 'Charlie', age: 35 }]);
+
+users.find({ age: 30 });
+users.findOne({ name: 'Alice' });
+
+users.updateOne({ name: 'Alice' }, { $set: { age: 31 } });
+users.updateMany({ age: 25 }, { $set: { age: 26 } });
+
+users.deleteOne({ name: 'Alice' });
+users.deleteMany({ age: 26 });
+
+users.createIndex({ age: 35 });
+```
+
+Environment variables: none.
+
+The engine is also published on npm as `youssefdb`. TODO: confirm the published package exposes the same API as `DB.js` in this repository.
+
+## What I built
+
+I wrote the whole engine myself:
+
+- `DB` and `Collection` classes with a MongoDB-like API
+- `insertOne`, `insertMany`, `find`, `findOne`, `updateOne`, `updateMany` (with `$set`), `deleteOne`, `deleteMany`
+- Automatic `_id` generation with BSON `ObjectId`
+- BSON persistence, one file per collection
+- `createIndex`, which stores the ids of documents matching a field value in a separate index file
+
+## Results
+
+- Published on npm as `youssefdb`.
+- Used as the storage layer of a food-delivery app.
+
+## Limitations and next steps
+
+- Queries support exact equality on top-level fields only; there are no operators such as `$gt` or `$in`.
+- Updates support `$set` only.
+- Every operation rewrites the whole collection file synchronously, so it is not suited to large collections or concurrent writers.
+- No transactions, locking or schema validation.
+- `readIndex()` currently reads the collection file instead of the index file, so saved indexes are not yet used by `find()`. Fixing this is the first next step.
+- Add a `package.json` and tests to this repository.
