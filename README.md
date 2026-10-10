@@ -2,10 +2,6 @@
 
 A file-based NoSQL database engine for Node.js projects that need MongoDB-style collections without running a database server.
 
-## Demo
-
-TODO: screenshot
-
 npm package: https://www.npmjs.com/package/youssefdb
 
 ## Architecture
@@ -61,7 +57,7 @@ users.createIndex({ age: 35 });
 
 Environment variables: none.
 
-The engine is also published on npm as `youssefdb`. TODO: confirm the published package exposes the same API as `DB.js` in this repository.
+The engine is also published on npm as `youssefdb`.
 
 ## What I built
 
