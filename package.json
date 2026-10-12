@@ -1,0 +1,41 @@
+{
+  "name": "youssefdb",
+  "version": "2.0.0",
+  "description": "A small file-based NoSQL database for Node.js with a MongoDB-style API. Each collection is one BSON file.",
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "DB.js",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "database",
+    "nosql",
+    "bson",
+    "embedded",
+    "file",
+    "mongodb",
+    "collection"
+  ],
+  "author": "Youssef Seyam",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youssefseyam212/youssefdb.git"
+  },
+  "homepage": "https://github.com/youssefseyam212/youssefdb#readme",
+  "bugs": {
+    "url": "https://github.com/youssefseyam212/youssefdb/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bson": "^6.8.0"
+  }
+}
